@@ -1,14 +1,15 @@
 import os
 import wx
 
-""" to do:
+""" COMPLETED:
 - implement save/save as functions
-- DONEfind out how to update gui to disable 'save' 
+-DONE find out how to update gui to disable 'save' 
 - // split this below IGNOREFORNOWimplement other features.. incl. calculations, tabs, syntax, font and color change
-NEW TO DO LIST
+-DONE move About -> Help
+
+TO DO LIST!
 --- next on list -> font change, bg color change
 - toggle word wrap
-- move About -> Help
 - add docs, html window.
 --- which also means writing said docs
 --- which means more features first, to have things to write abt
@@ -17,6 +18,7 @@ NEW TO DO LIST
 - and printing
 - display paths to a few recently opened files? mb five of em
 - shortcuts, for saving, new, etc. (eg ctrl+s)
+- change About to add more info with AboutBox/AboutDialogInfo
 """
 
 class MainWindow(wx.Frame):
@@ -28,25 +30,33 @@ class MainWindow(wx.Frame):
 		# Setting up the menu.
 		filemenu= wx.Menu()
 		helpmenu= wx.Menu()
+		setmenu = wx.Menu() # settings menu, if you're confused
 
 		# wx.ID_ABOUT and wx.ID_EXIT are standard ids provided by wxWidgets.
 		
 		# explicitly defining menu item Save for practice/future ref
-		menuSave = wx.MenuItem(filemenu, wx.ID_SAVE, "&Save"," Save current file")
-		
-		# implicit define the rest of menu items
-		menuOpen = filemenu.Append(wx.ID_OPEN, "&Open..."," Open a file from your computer")
+		menuSave = wx.MenuItem(filemenu, wx.ID_SAVE, "&Save\t\tCtrl+S"," Save current file")
+		# appending to filemenu below
+		# & implicit define the rest of menu items
+		menuOpen = filemenu.Append(wx.ID_OPEN, "&Open...\t\tCtrl+O"," Open a file from your computer")
 		#menuSave = filemenu.Append(wx.ID_SAVE, "&Save"," Save current file")
 		filemenu.AppendItem(menuSave)
 		menuSaveAs = filemenu.Append(wx.ID_SAVEAS,"Save &As...","Save current file as...")
-		menuAbout = filemenu.Append(wx.ID_ABOUT, "&About"," Information about this program")
+		filemenu.AppendSeparator()
 		menuExit = filemenu.Append(wx.ID_EXIT,"E&xit"," Terminate the program")
 		
 		
+		# append to Helpmenu
+		menuAbout = helpmenu.Append(wx.ID_ABOUT, "&About"," Information about this program")		
+		
+		# append to Setmenu
+		menuWrap = wx.MenuItem(setmenu, wx.ID_ANY, "Word &Wrap", " Toggle word wrap")
+		setmenu.AppendItem(menuWrap)
 		
 		# Creating the menubar.
 		menuBar = wx.MenuBar()
 		menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
+		menuBar.Append(filemenu,"&Settings") # Adding the "setmenu" to the MenuBar		
 		menuBar.Append(helpmenu,"&Help") # Adding the "helpmenu" to the MenuBar
 		self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
 
@@ -56,13 +66,17 @@ class MainWindow(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
 		self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
 		self.Bind(wx.EVT_MENU, self.OnSaveAs, menuSaveAs)
+		self.Bind(wx.EVT_MENU, self.OnWrap, menuWrap)
 		
+		# events requiring updates in UI
 		self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateSave, menuSave)
+		self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateWrap, menuWrap)
 		
 		self.Show(True)
 		
 
 	def SetTitle(self,e):
+		""" set title of program at the top"""
 		#MainWindow.SetTitle overrides wx.Frame.SetTitle, super instead
 		super(MainWindow,self).SetTitle("%s - edicate" %self.filename)
 		
@@ -112,13 +126,24 @@ class MainWindow(wx.Frame):
 			self.dirname = dlg.GetDirectory()
 			self.OnSave(e)
 		
+	
+	def OnWrap(self,e):
+		""" toggle word wrap"""
+		pass
+	
+	# def of methods for updating UI
 	def OnUpdateSave(self,e):
 		""" grey out Save for new files, where save path
 		unspecified, and also when document hasn't been
 		modified"""
 		# TO DO: Check for textctrl having been modified or not
+		# to prevent mindless saving
 		enablecheck = hasattr(self, 'filename')
 		e.Enable(enablecheck)
+		
+	def OnUpdateWrap(self,e):
+		""" check mark for menu item Wrap toggle"""
+		pass
 	
 		
 app = wx.App(False)
