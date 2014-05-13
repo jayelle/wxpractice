@@ -1,0 +1,6 @@
+ediate - the free, open-source, minimalist text editor.
+made with (wx)python for experimenting with wxpython.
+easter eggs galore.
+see full documentation in Help menu.
+current version: v0.1
+edited in edicate.
